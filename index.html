@@ -1,0 +1,1892 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WAVORAZCA - Dashboard 7 KAIH</title>
+    <!-- Google Fonts: Plus Jakarta Sans, Inter & Groovy Retro Display -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js untuk Grafik Perkembangan 1 Bulan -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif'],
+                        lettering: ['"Bagel Fat One"', 'cursive'],
+                    },
+                    colors: {
+                        skyLight: '#7DD3FC',     /* Biru Langit */
+                        denim: '#2563EB',        /* Biru Denim */
+                        jeans: '#1E3A8A',        /* Biru Jeans */
+                        butter: '#FEF08A',       /* Butter Yellow */
+                        butterDark: '#FACC15',   /* Butter Yellow Aksen */
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Background Sunburst Vintage Paper Rays (Biru Denim/Sky & Cream Hangat) */
+        .bg-sunburst-rays {
+            background-color: #F4EFE6;
+            background-image:
+                radial-gradient(circle at center, rgba(255, 252, 245, 0.45) 0%, rgba(30, 58, 138, 0.14) 100%),
+                repeating-conic-gradient(
+                    from 0deg at 50% 50%,
+                    #2B7BBB 0deg 10deg,
+                    #F3EFE6 10deg 20deg
+                );
+            background-attachment: fixed;
+            position: relative;
+        }
+        /* Tekstur serat kertas vintage halus di atas sunburst */
+        .bg-sunburst-rays::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.35;
+            background-image:
+                radial-gradient(rgba(30, 58, 138, 0.18) 1px, transparent 0),
+                radial-gradient(rgba(180, 160, 130, 0.22) 1px, transparent 0);
+            background-size: 24px 24px, 17px 17px;
+            background-position: 0 0, 8px 11px;
+        }
+        .bg-wavorazca-hero {
+            background-color: #F4EFE6;
+            background-image:
+                radial-gradient(circle at center, rgba(255, 253, 247, 0.72) 0%, rgba(254, 240, 138, 0.25) 45%, rgba(30, 58, 138, 0.18) 100%),
+                repeating-conic-gradient(
+                    from 0deg at 50% 50%,
+                    #2B7BBB 0deg 10deg,
+                    #F3EFE6 10deg 20deg
+                );
+        }
+        .bg-wavorazca-dashboard {
+            background-color: #F4EFE6;
+            background-image:
+                radial-gradient(circle at center, rgba(255, 252, 245, 0.52) 0%, rgba(244, 239, 230, 0.35) 60%, rgba(30, 58, 138, 0.15) 100%),
+                repeating-conic-gradient(
+                    from 0deg at 50% 50%,
+                    rgba(43, 123, 187, 0.88) 0deg 10deg,
+                    #F3EFE6 10deg 20deg
+                );
+            background-attachment: fixed;
+        }
+        .bg-wavorazca-header {
+            background: linear-gradient(90deg, rgba(30, 58, 138, 0.94) 0%, rgba(43, 123, 187, 0.92) 55%, rgba(125, 211, 252, 0.94) 100%);
+            backdrop-filter: blur(12px);
+        }
+        .bg-butter-gradient {
+            background: linear-gradient(135deg, #FEFCE8 0%, #FEF08A 55%, #FDE047 100%);
+        }
+        .bg-sky-denim-gradient {
+            background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 55%, #BAE6FD 100%);
+        }
+        .bg-jeans-card {
+            background: linear-gradient(145deg, #2B4570 0%, #1E3A8A 100%);
+        }
+        .card-hover {
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            background-color: rgba(255, 253, 249, 0.94);
+            backdrop-filter: blur(10px);
+        }
+        .card-hover:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 28px -8px rgba(30, 58, 138, 0.22);
+        }
+
+        /* Layer Ilustrasi Latar Belakang Estetis per Elemen 7 KAIH */
+        .kaih-card-body {
+            position: relative;
+            z-index: 1;
+        }
+        .kaih-bg-artwork {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+            opacity: 0.34;
+            transition: opacity 0.35s ease, transform 0.5s ease;
+        }
+        .card-hover:hover .kaih-bg-artwork {
+            opacity: 0.45;
+            transform: scale(1.02);
+        }
+        .kaih-bg-artwork svg {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .kaih-glass-box {
+            background-color: rgba(255, 255, 255, 0.84);
+            backdrop-filter: blur(6px);
+        }
+
+        /* Animasi Layar Sambutan Logo WAVORAZCA (2.5 Detik) */
+        @keyframes logoEntrance {
+            0% {
+                opacity: 0;
+                transform: scale(0.55) rotate(-18deg);
+            }
+            45% {
+                opacity: 1;
+                transform: scale(1.06) rotate(4deg);
+            }
+            75% {
+                transform: scale(0.98) rotate(-1deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+        }
+        @keyframes pulseGlow {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(254, 240, 138, 0.55), 0 20px 45px rgba(30, 58, 138, 0.45);
+            }
+            50% {
+                box-shadow: 0 0 0 22px rgba(254, 240, 138, 0), 0 25px 55px rgba(30, 58, 138, 0.6);
+            }
+        }
+        @keyframes progressFill {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+        @keyframes fadeUpText {
+            0% {
+                opacity: 0;
+                transform: translateY(14px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .animate-wavorazca-logo {
+            animation: logoEntrance 1.3s cubic-bezier(0.22, 1, 0.36, 1) forwards,
+                       pulseGlow 2.2s ease-in-out infinite;
+        }
+        .animate-welcome-text {
+            animation: fadeUpText 0.9s ease-out 0.35s both;
+        }
+        .animate-splash-bar {
+            animation: progressFill 2.5s linear forwards;
+        }
+        .splash-fade-out {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.45s ease-out;
+        }
+
+        /* Efek Tipografi Groovy Retro: Biru Logo Wavorazca dengan Siluet Cream */
+        .wavorazca-retro-title {
+            color: #465373; /* Biru Slate/Denim Logo Wavorazca */
+            -webkit-text-stroke: 1.5px #36415C;
+            text-shadow:
+                2px 2px 0px #F7F2E7,
+                4px 4px 0px #E6DCC8,
+                6px 6px 0px rgba(54, 65, 92, 0.25);
+        }
+        .wavorazca-retro-header {
+            color: #465373; /* Biru Slate/Denim Logo Wavorazca */
+            -webkit-text-fill-color: #465373;
+            -webkit-text-stroke: 0.75px #36415C;
+            filter: drop-shadow(1.5px 1.5px 0px #F7F2E7) drop-shadow(3px 3px 0px #E6DCC8) drop-shadow(0px 2px 6px rgba(255, 255, 255, 0.75));
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #FAF9F6;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #93C5FD;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #2563EB;
+        }
+    </style>
+</head>
+<body class="bg-wavorazca-dashboard bg-sunburst-rays text-slate-800 min-h-screen antialiased selection:bg-butter selection:text-jeans">
+
+    <!-- ===================================================================== -->
+    <!-- LAYAR SAMBUTAN (SPLASH SCREEN) DENGAN ANIMASI LOGO 2,5 DETIK          -->
+    <!-- ===================================================================== -->
+    <div id="splashScreen" class="fixed inset-0 z-50 bg-wavorazca-hero flex flex-col items-center justify-center p-6 text-center overflow-hidden">
+        <!-- Lingkaran Cahaya Lembut di Tengah agar Logo & Teks Tetap Kontras & Jelas -->
+        <div class="w-[34rem] h-[34rem] rounded-full bg-white/80 blur-2xl absolute pointer-events-none"></div>
+
+        <div class="max-w-md w-full flex flex-col items-center relative z-10">
+            <!-- SVG Logo WAVORAZCA Sesuai Desain Asli -->
+            <div class="w-52 h-52 sm:w-60 sm:h-60 rounded-full bg-white/95 p-2 shadow-xl animate-wavorazca-logo mb-6 border-2 border-white">
+                <svg viewBox="0 0 400 400" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <path id="topArcSplash" d="M 55,200 A 145,145 0 1,1 345,200" />
+                        <path id="bottomArcSplash" d="M 42,210 A 158,158 0 0,0 358,210" />
+                    </defs>
+                    <!-- Lingkaran Luar Denim/Jeans Gelap -->
+                    <circle cx="200" cy="200" r="192" fill="#465373" stroke="#36415C" stroke-width="4"/>
+                    <circle cx="200" cy="200" r="185" fill="none" stroke="#CBD5E1" stroke-width="3" stroke-dasharray="3 4"/>
+                    
+                    <!-- Aksen Oval Halus -->
+                    <ellipse cx="95" cy="145" rx="28" ry="18" fill="#5D6D91" opacity="0.6"/>
+                    <ellipse cx="305" cy="145" rx="28" ry="18" fill="#5D6D91" opacity="0.6"/>
+
+                    <!-- Lingkaran Dalam Putih -->
+                    <circle cx="200" cy="205" r="112" fill="#FFFFFF"/>
+
+                    <!-- Cincin Orbit -->
+                    <ellipse cx="200" cy="212" rx="152" ry="38" fill="none" stroke="#E2E8F0" stroke-width="2.5" transform="rotate(-4 200 212)"/>
+
+                    <!-- Bintang Berlapis (Layered Star) -->
+                    <g transform="translate(-14, 6)">
+                        <!-- Bintang Luar -->
+                        <polygon points="182,126 202,174 254,178 214,212 227,262 182,235 137,262 150,212 110,178 162,174"
+                                 fill="#FFFFFF" stroke="#536387" stroke-width="6" stroke-linejoin="round"/>
+                        <!-- Bintang Tengah -->
+                        <polygon points="182,145 196,179 233,182 205,206 214,242 182,223 150,242 159,206 131,182 168,179"
+                                 fill="#FFFFFF" stroke="#536387" stroke-width="5" stroke-linejoin="round"/>
+                        <!-- Bintang Inti Biru Muda -->
+                        <polygon points="182,163 191,184 214,186 196,201 202,223 182,211 162,223 168,201 150,186 173,184"
+                                 fill="#DCE3F2"/>
+                    </g>
+
+                    <!-- Kilauan Bintang 4 Sudut (Sparkles) -->
+                    <path d="M235,122 Q238,136 252,139 Q238,142 235,156 Q232,142 218,139 Q232,136 235,122 Z" fill="#536387"/>
+                    <path d="M208,116 Q210,124 218,126 Q210,128 208,136 Q206,128 198,126 Q206,124 208,116 Z" fill="#536387"/>
+                    <path d="M84,186 Q87,200 101,203 Q87,206 84,220 Q81,206 67,203 Q81,200 84,186 Z" fill="#E2E8F0"/>
+                    <path d="M312,226 Q315,240 329,243 Q315,246 312,260 Q309,246 295,243 Q309,240 312,226 Z" fill="#E2E8F0"/>
+
+                    <!-- Teks "active creative" -->
+                    <text x="255" y="218" text-anchor="middle" font-family="Georgia, serif" font-size="27" font-weight="bold" fill="#536387">active</text>
+                    <text x="255" y="236" text-anchor="middle" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#536387" letter-spacing="0.5">creative</text>
+
+                    <!-- Teks Melengkung Atas: wavorazca (Biru Logo dengan Siluet Cream) -->
+                    <text font-family="'Bagel Fat One', cursive" font-size="34" font-weight="normal" fill="#F7F2E7" letter-spacing="1.5" dx="2" dy="2">
+                        <textPath href="#topArcSplash" startOffset="50%" text-anchor="middle">WAVORAZCA</textPath>
+                    </text>
+                    <text font-family="'Bagel Fat One', cursive" font-size="34" font-weight="normal" fill="#536387" stroke="#F7F2E7" stroke-width="1.2" letter-spacing="1.5">
+                        <textPath href="#topArcSplash" startOffset="50%" text-anchor="middle">WAVORAZCA</textPath>
+                    </text>
+
+                    <!-- Teks Melengkung Bawah: Slogan -->
+                    <text font-family="Inter, sans-serif" font-size="15.5" font-weight="600" fill="#FFFFFF" letter-spacing="0.3">
+                        <textPath href="#bottomArcSplash" startOffset="50%" text-anchor="middle">bergerak bersama, menciptakan gelombang perubahan</textPath>
+                    </text>
+                </svg>
+            </div>
+
+            <!-- Teks Sambutan -->
+            <div class="animate-welcome-text space-y-2">
+                <span class="inline-block px-4 py-1 rounded-full bg-butter text-jeans font-extrabold text-xs tracking-wider uppercase shadow-sm border border-yellow-300">
+                    Selamat Datang di Portal Siswa
+                </span>
+                <h1 class="font-lettering text-3xl sm:text-5xl tracking-wider wavorazca-retro-title">
+                    WAVORAZCA
+                </h1>
+                <p class="text-xs sm:text-sm text-slate-600 font-medium">
+                    Bergerak bersama, menciptakan gelombang perubahan positif setiap hari
+                </p>
+            </div>
+
+            <!-- Progress Bar 2.5 Detik -->
+            <div class="w-56 h-2.5 bg-white/80 rounded-full overflow-hidden mt-6 border border-sky-200 shadow-inner">
+                <div class="h-full bg-gradient-to-r from-skyLight via-denim to-butterDark rounded-full animate-splash-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOTIFIKASI TOAST / MESSAGE BOX (Pengganti alert()) -->
+    <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- ===================================================================== -->
+    <!-- HALAMAN 1: LOGIN SISWA & PEMILIHAN AGAMA                              -->
+    <!-- ===================================================================== -->
+    <section id="loginPage" class="hidden min-h-screen bg-wavorazca-hero flex items-center justify-center p-4 sm:p-6 relative overflow-hidden">
+        <!-- Glow Lembut di Belakang Kartu Login -->
+        <div class="w-[32rem] h-[32rem] rounded-full bg-white/60 blur-3xl absolute pointer-events-none"></div>
+
+        <div class="w-full max-w-md bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border-2 border-white overflow-hidden relative z-10">
+        <div class="w-full max-w-md bg-white/90 backdrop-blur-xl rounded-3xl shadow-xl border border-white overflow-hidden relative z-10">
+            <!-- Header Brand dengan Logo WAVORAZCA -->
+            <div class="bg-gradient-to-br from-sky-100/90 via-white to-amber-50/90 p-6 sm:p-7 text-center relative overflow-hidden border-b border-sky-100">
+                <div class="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-skyLight/30 blur-xl"></div>
+                <div class="absolute -bottom-10 -left-10 w-32 h-32 rounded-full bg-butter/40 blur-xl"></div>
+                
+                <div class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-white p-1.5 shadow-lg mb-3 border-2 border-butter">
+                    <svg viewBox="0 0 400 400" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <path id="topArcLogin" d="M 55,200 A 145,145 0 1,1 345,200" />
+                            <path id="bottomArcLogin" d="M 42,210 A 158,158 0 0,0 358,210" />
+                        </defs>
+                        <circle cx="200" cy="200" r="192" fill="#465373"/>
+                        <circle cx="200" cy="205" r="112" fill="#FFFFFF"/>
+                        <ellipse cx="200" cy="212" rx="152" ry="38" fill="none" stroke="#E2E8F0" stroke-width="3" transform="rotate(-4 200 212)"/>
+                        <g transform="translate(-14, 6)">
+                            <polygon points="182,126 202,174 254,178 214,212 227,262 182,235 137,262 150,212 110,178 162,174" fill="#FFFFFF" stroke="#536387" stroke-width="7" stroke-linejoin="round"/>
+                            <polygon points="182,163 191,184 214,186 196,201 202,223 182,211 162,223 168,201 150,186 173,184" fill="#DCE3F2"/>
+                        </g>
+                        <text x="255" y="218" text-anchor="middle" font-family="Georgia, serif" font-size="28" font-weight="bold" fill="#536387">active</text>
+                        <text x="255" y="236" text-anchor="middle" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#536387">creative</text>
+                        <text font-family="'Bagel Fat One', cursive" font-size="34" font-weight="normal" fill="#F7F2E7" letter-spacing="1.5" dx="2" dy="2">
+                            <textPath href="#topArcLogin" startOffset="50%" text-anchor="middle">WAVORAZCA</textPath>
+                        </text>
+                        <text font-family="'Bagel Fat One', cursive" font-size="34" font-weight="normal" fill="#536387" stroke="#F7F2E7" stroke-width="1.2" letter-spacing="1.5">
+                            <textPath href="#topArcLogin" startOffset="50%" text-anchor="middle">WAVORAZCA</textPath>
+                        </text>
+                        <text font-family="Inter, sans-serif" font-size="15" font-weight="600" fill="#FFFFFF">
+                            <textPath href="#bottomArcLogin" startOffset="50%" text-anchor="middle">bergerak bersama, menciptakan gelombang perubahan</textPath>
+                        </text>
+                    </svg>
+                </div>
+                <h1 class="font-lettering text-4xl sm:text-5xl tracking-wider py-1 wavorazca-retro-title">
+                    WAVORAZCA
+                </h1>
+                <p class="text-denim text-xs sm:text-sm font-semibold mt-1">
+                    Portal 7 Kebiasaan Anak Indonesia Hebat (7 KAIH)
+                </p>
+            </div>
+
+            <!-- Form Login -->
+            <form id="loginForm" class="p-6 sm:p-8 space-y-5">
+                <div>
+                    <label for="studentName" class="block text-xs font-bold uppercase tracking-wider text-jeans mb-1.5">
+                        Nama Lengkap Siswa
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-denim">
+                            <i data-lucide="user" class="w-5 h-5"></i>
+                        </span>
+                        <input type="text" id="studentName" required placeholder="Contoh: Budi Santoso"
+                            class="w-full pl-11 pr-4 py-3 rounded-xl border border-sky-200 bg-sky-50/50 focus:bg-white focus:border-denim focus:ring-2 focus:ring-skyLight outline-none transition text-sm font-medium">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="studentEmail" class="block text-xs font-bold uppercase tracking-wider text-jeans mb-1.5">
+                        Email Siswa
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-denim">
+                            <i data-lucide="mail" class="w-5 h-5"></i>
+                        </span>
+                        <input type="email" id="studentEmail" required placeholder="nama.siswa@sekolah.sch.id"
+                            class="w-full pl-11 pr-4 py-3 rounded-xl border border-sky-200 bg-sky-50/50 focus:bg-white focus:border-denim focus:ring-2 focus:ring-skyLight outline-none transition text-sm font-medium">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="studentReligion" class="block text-xs font-bold uppercase tracking-wider text-jeans mb-1.5">
+                        Pilih Agama (6 Agama Resmi Indonesia)
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-denim">
+                            <i data-lucide="heart-handshake" class="w-5 h-5"></i>
+                        </span>
+                        <select id="studentReligion" required
+                            class="w-full pl-11 pr-10 py-3 rounded-xl border border-sky-200 bg-sky-50/50 focus:bg-white focus:border-denim focus:ring-2 focus:ring-skyLight outline-none transition text-sm font-semibold text-jeans appearance-none cursor-pointer">
+                            <option value="" disabled selected>-- Pilih Agama Anda --</option>
+                            <option value="Islam">1. Islam</option>
+                            <option value="Kristen Protestan">2. Kristen Protestan</option>
+                            <option value="Katolik">3. Katolik</option>
+                            <option value="Hindu">4. Hindu</option>
+                            <option value="Buddha">5. Buddha</option>
+                            <option value="Khonghucu">6. Khonghucu</option>
+                        </select>
+                        <span class="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-denim">
+                            <i data-lucide="chevron-down" class="w-5 h-5"></i>
+                        </span>
+                    </div>
+                    <p class="text-[11px] text-slate-500 mt-1.5">
+                        *Jadwal & aktivitas elemen Beribadah akan menyesuaikan agama yang dipilih.
+                    </p>
+                </div>
+
+                <button type="submit"
+                    class="w-full py-3.5 px-6 rounded-xl bg-butter-gradient hover:brightness-105 text-jeans font-display font-extrabold text-base shadow-lg shadow-yellow-500/20 border border-yellow-400 flex items-center justify-center gap-2 transition transform active:scale-95 cursor-pointer">
+                    <span>Masuk ke Dashboard</span>
+                    <i data-lucide="arrow-right-circle" class="w-5 h-5"></i>
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- HALAMAN 2: DASHBOARD UTAMA 7 KAIH & REKAPITULASI GRAFIK               -->
+    <!-- ===================================================================== -->
+    <div id="dashboardPage" class="hidden min-h-screen flex flex-col">
+        
+        <!-- Top Navigation Bar -->
+        <header class="bg-wavorazca-header text-white shadow-lg sticky top-0 z-30">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 rounded-full bg-white p-0.5 flex items-center justify-center shadow border border-butter shrink-0">
+                        <svg viewBox="0 0 400 400" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="200" cy="200" r="192" fill="#465373"/>
+                            <circle cx="200" cy="200" r="128" fill="#FFFFFF"/>
+                            <polygon points="200,98 225,160 292,165 241,208 257,273 200,238 143,273 159,208 108,165 175,160" fill="#FFFFFF" stroke="#536387" stroke-width="10" stroke-linejoin="round"/>
+                            <polygon points="200,145 213,177 248,180 221,203 229,237 200,219 171,237 179,203 152,180 187,177" fill="#DCE3F2"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="font-lettering text-2xl sm:text-3xl tracking-wider leading-none wavorazca-retro-header">
+                            WAVORAZCA
+                        </h1>
+                        <span class="text-[11px] text-butter font-medium">7 Kebiasaan Anak Indonesia Hebat</span>
+                    </div>
+                </div>
+
+                <!-- Info Siswa & Tombol Keluar -->
+                <div class="flex items-center gap-3">
+                    <div class="hidden sm:flex flex-col text-right">
+                        <span id="navStudentName" class="text-sm font-bold text-white leading-tight">Siswa</span>
+                        <span class="text-xs text-butter flex items-center justify-end gap-1.5">
+                            <span id="navStudentEmail">email@siswa.id</span>
+                            <span>•</span>
+                            <span id="navStudentReligion" class="px-2 py-0.5 rounded-full bg-jeans/70 text-butter font-semibold text-[10px]">Agama</span>
+                        </span>
+                    </div>
+                    <button onclick="logoutStudent()" title="Ganti Akun / Keluar"
+                        class="p-2.5 rounded-xl bg-jeans/60 hover:bg-jeans text-butter border border-skyLight/30 transition flex items-center gap-1.5 text-xs font-semibold cursor-pointer">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                        <span class="hidden md:inline">Keluar</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Student Info Sub-bar -->
+            <div class="sm:hidden bg-jeans/80 px-4 py-1.5 text-xs flex justify-between items-center text-sky-100 border-t border-white/10">
+                <span id="mobileStudentName" class="font-semibold truncate max-w-[60%]">Siswa</span>
+                <span id="mobileStudentReligion" class="px-2 py-0.5 rounded-full bg-butter text-jeans font-bold text-[10px]">Agama</span>
+            </div>
+        </header>
+
+        <!-- Main Container -->
+        <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+            <!-- Tab Navigasi Utama: Panel 7 KAIH vs Panel Rekap & Grafik 1 Bulan -->
+            <div class="bg-white p-2 rounded-2xl shadow-sm border border-sky-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div class="flex w-full sm:w-auto gap-2">
+                    <button id="tabBtnKaih" onclick="switchMainTab('kaih')"
+                        class="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl font-display font-bold text-sm flex items-center justify-center gap-2 transition bg-jeans text-butter shadow cursor-pointer">
+                        <i data-lucide="layout-grid" class="w-4 h-4"></i>
+                        <span>Panel 7 KAIH Harian</span>
+                    </button>
+                    <button id="tabBtnRekap" onclick="switchMainTab('rekap')"
+                        class="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl font-display font-bold text-sm flex items-center justify-center gap-2 transition text-jeans hover:bg-sky-100 cursor-pointer">
+                        <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+                        <span>Rekap & Grafik 1 Bulan</span>
+                    </button>
+                </div>
+
+                <!-- Tanggal & Indikator Skor Hari Ini -->
+                <div class="flex items-center justify-between w-full sm:w-auto gap-4 px-2">
+                    <div class="text-xs text-slate-600 font-medium flex items-center gap-1.5">
+                        <i data-lucide="calendar" class="w-4 h-4 text-denim"></i>
+                        <span id="currentDateLabel">Hari Ini</span>
+                    </div>
+                    <div class="px-3.5 py-1.5 rounded-xl bg-butter-gradient border border-yellow-400 text-jeans font-extrabold text-xs sm:text-sm shadow-sm">
+                        Skor Hari Ini: <span id="todayScoreDisplay">0</span>%
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================================================================= -->
+            <!-- PANEL A: 7 ELEMEN KAIH                                            -->
+            <!-- ================================================================= -->
+            <div id="panelKaih" class="space-y-6">
+                
+                <!-- Grid 7 Elemen -->
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+
+                    <!-- 1. ELEMEN BANGUN PAGI -->
+                    <div class="bg-white rounded-3xl border border-sky-200 shadow-md overflow-hidden flex flex-col card-hover relative">
+                        <div class="bg-gradient-to-r from-jeans to-denim p-4 text-white flex items-center justify-between relative z-10">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-8 h-8 rounded-xl bg-butter text-jeans font-extrabold flex items-center justify-center text-sm">1</span>
+                                <h2 class="font-display font-bold text-lg">Bangun Pagi</h2>
+                            </div>
+                            <i data-lucide="sunrise" class="w-6 h-6 text-butter"></i>
+                        </div>
+                        <div class="p-5 flex-1 flex flex-col justify-between space-y-4 relative overflow-hidden">
+                            <!-- Ilustrasi Aesthetic Kamar Tidur Pagi -->
+                            <div class="kaih-bg-artwork">
+                                <svg viewBox="0 0 400 420" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                                    <defs>
+                                        <linearGradient id="morningWall" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="0%" stop-color="#E0F2FE"/>
+                                            <stop offset="60%" stop-color="#FEF9C3"/>
+                                            <stop offset="100%" stop-color="#FDE68A"/>
+                                        </linearGradient>
+                                        <linearGradient id="sunBeam" x1="0" y1="0" x2="1" y2="1">
+                                            <stop offset="0%" stop-color="#FEF08A" stop-opacity="0.85"/>
+                                            <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+                                        </linearGradient>
+                                    </defs>
+                                    <rect width="400" height="420" fill="url(#morningWall)"/>
+                                    <!-- Jendela Kamar -->
+                                    <rect x="210" y="35" width="145" height="165" rx="14" fill="#BAE6FD" stroke="#93C5FD" stroke-width="5"/>
+                                    <circle cx="315" cy="80" r="24" fill="#FDE047"/>
+                                    <!-- Sinar Matahari Masuk Kamar -->
+                                    <polygon points="210,35 355,200 140,420 20,420" fill="url(#sunBeam)"/>
+                                    <!-- Gorden Estetik -->
+                                    <path d="M198,28 Q228,110 205,212 L192,212 Z" fill="#60A5FA" opacity="0.65"/>
+                                    <path d="M366,28 Q336,110 358,212 L372,212 Z" fill="#60A5FA" opacity="0.65"/>
+                                    <!-- Kasur & Bantal Empuk -->
+                                    <rect x="24" y="265" width="235" height="110" rx="22" fill="#93C5FD"/>
+                                    <rect x="24" y="295" width="235" height="85" rx="18" fill="#3B82F6" opacity="0.55"/>
+                                    <rect x="42" y="252" width="75" height="32" rx="14" fill="#FFFFFF"/>
+                                    <rect x="126" y="252" width="75" height="32" rx="14" fill="#FEF9C3"/>
+                                    <!-- Tanaman Hias Kamar -->
+                                    <rect x="305" y="315" width="38" height="45" rx="8" fill="#F59E0B" opacity="0.6"/>
+                                    <ellipse cx="324" cy="295" rx="14" ry="26" fill="#34D399" opacity="0.65"/>
+                                    <ellipse cx="310" cy="303" rx="11" ry="20" transform="rotate(-25 310 303)" fill="#10B981" opacity="0.55"/>
+                                </svg>
+                            </div>
+
+                            <!-- Jadwal Alarm & Cara Menyetel -->
+                            <div class="kaih-card-body bg-sky-50/90 backdrop-blur-sm rounded-2xl p-3.5 border border-sky-200/80 space-y-2.5">
+                                <div class="flex items-center justify-between gap-2">
+                                    <label class="text-xs font-bold text-jeans flex items-center gap-1.5">
+                                        <i data-lucide="alarm-clock" class="w-4 h-4 text-denim"></i>
+                                        Jadwal Alarm Pagi:
+                                    </label>
+                                    <input type="time" id="alarmTime" value="05:00"
+                                        class="px-2.5 py-1 rounded-lg border border-sky-300 bg-white text-jeans font-bold text-sm focus:outline-none focus:border-denim">
+                                </div>
+                                <details class="text-xs text-slate-600 bg-white/90 rounded-xl p-2.5 border border-sky-100 cursor-pointer">
+                                    <summary class="font-bold text-denim select-none">Panduan Cara Menyetel Alarm Efektif</summary>
+                                    <ol class="list-decimal ml-4 mt-1.5 space-y-1 text-[11px] leading-relaxed">
+                                        <li>Buka aplikasi <b>Jam / Clock</b> di gawai atau jam weker.</li>
+                                        <li>Atur waktu pukul <b>04:30 - 05:30</b> pagi secara konsisten.</li>
+                                        <li>Pilih nada dering ceria & letakkan gawai 2 meter dari kasur agar kamu harus beranjak mematikannya.</li>
+                                        <li>Hindari menekan tombol <i>Snooze</i> (tunda).</li>
+                                    </ol>
+                                </details>
+                            </div>
+
+                            <!-- Misi Bangun Pagi -->
+                            <div class="kaih-card-body kaih-glass-box rounded-2xl p-3 border border-white/80">
+                                <p class="text-xs font-bold uppercase tracking-wider text-jeans mb-2">Misi Bangun Pagi:</p>
+                                <div class="space-y-1.5" id="misiBangunContainer">
+                                    <label class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-sky-50/90 border border-transparent hover:border-sky-100 cursor-pointer transition">
+                                        <input type="checkbox" class="kaih-check bangun-check w-4 h-4 accent-denim rounded" value="Beranjak dari kasur">
+                                        <span class="text-sm font-medium text-slate-800">Beranjak segera dari kasur & merapikan selimut</span>
+                                    </label>
+                                    <label class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-sky-50/90 border border-transparent hover:border-sky-100 cursor-pointer transition">
+                                        <input type="checkbox" class="kaih-check bangun-check w-4 h-4 accent-denim rounded" value="Membuka gorden">
+                                        <span class="text-sm font-medium text-slate-800">Membuka gorden & jendela kamar</span>
+                                    </label>
+                                    <label class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-sky-50/90 border border-transparent hover:border-sky-100 cursor-pointer transition">
+                                        <input type="checkbox" class="kaih-check bangun-check w-4 h-4 accent-denim rounded" value="Mencuci muka">
+                                        <span class="text-sm font-medium text-slate-800">Mencuci muka & minum air putih</span>
+                                    </label>
+                                    <label class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-sky-50/90 border border-transparent hover:border-sky-100 cursor-pointer transition">
+                                        <input type="checkbox" class="kaih-check bangun-check w-4 h-4 accent-denim rounded" value="Peregangan badan">
+                                        <span class="text-sm font-medium text-slate-800">Melakukan peregangan badan ringan</span>
+                                    </label>
+                                    <label class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-sky-50/90 border border-transparent hover:border-sky-100 cursor-pointer transition">
+                                        <input type="checkbox" class="kaih-check bangun-check w-4 h-4 accent-denim rounded" value="Mandi pagi">
+                                        <span class="text-sm font-medium text-slate-800">Mandi pagi & bersiap ke sekolah</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. ELEMEN BERIBADAH (SESUAI AGAMA LOGIN) -->
+                    <div class="bg-white rounded-3xl border border-sky-200 shadow-md overflow-hidden flex flex-col card-hover relative">
+                        <div class="bg-gradient-to-r from-denim to-sky-500 p-4 text-white flex items-center justify-between relative z-10">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-8 h-8 rounded-xl bg-butter text-jeans font-extrabold flex items-center justify-center text-sm">2</span>
+                                <div>
+                                    <h2 class="font-display font-bold text-lg leading-tight">Beribadah</h2>
+                                    <p id="ibadahReligionSubtitle" class="text-[11px] text-butter font-semibold">Agama: -</p>
+                                </div>
+                            </div>
+                            <i data-lucide="sparkles" class="w-6 h-6 text-butter"></i>
+                        </div>
+                        <div class="p-5 flex-1 flex flex-col justify-between space-y-3 relative overflow-hidden">
+                            <!-- Ilustrasi Aesthetic Tempat Ibadah Dinamis Sesuai Agama -->
+                            <div id="ibadahBgArtwork" class="kaih-bg-artwork">
+                                <!-- Diisi otomatis via JS sesuai agama -->
+                            </div>
+
+                            <div class="kaih-card-body bg-butter-gradient/85 backdrop-blur-sm rounded-2xl p-3 border border-yellow-300 text-xs text-jeans">
+                                <span class="font-bold block mb-0.5">Panduan Aktivitas Ibadah:</span>
+                                <p id="ibadahDescription" class="text-[11px] leading-relaxed text-slate-800">
+                                    Memuat aktivitas ibadah...
+                                </p>
+                            </div>
+                            <div class="kaih-card-body kaih-glass-box rounded-2xl p-3 border border-white/80">
+                                <p class="text-xs font-bold uppercase tracking-wider text-jeans mb-2">Jadwal & Ceklis Ibadah Harian:</p>
+                                <div id="ibadahChecklistContainer" class="space-y-1.5 max-h-60 overflow-y-auto pr-1">
+                                    <!-- Diisi otomatis via JS berdasarkan agama -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. ELEMEN BEROLAHRAGA (2x SEMINGGU + TIMER 10-15 MENIT) -->
+                    <div class="bg-white rounded-3xl border border-sky-200 shadow-md overflow-hidden flex flex-col card-hover relative">
+                        <div class="bg-gradient-to-r from-jeans via-denim to-skyLight p-4 text-white flex items-center justify-between relative z-10">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-8 h-8 rounded-xl bg-butter text-jeans font-extrabold flex items-center justify-center text-sm">3</span>
+                                <div>
+                                    <h2 class="font-display font-bold text-lg leading-tight">Berolahraga</h2>
+                                    <p class="text-[11px] text-butter font-semibold">Target: 2x Seminggu (10-15 Menit)</p>
+                                </div>
+                            </div>
+                            <i data-lucide="dumbbell" class="w-6 h-6 text-jeans"></i>
+                        </div>
+                        <div class="p-5 flex-1 flex flex-col justify-between space-y-4 relative overflow-hidden">
+                            <!-- Ilustrasi Aesthetic Taman & Lintasan Olahraga -->
+                            <div class="kaih-bg-artwork">
+                                <svg viewBox="0 0 400 420" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                                    <defs>
+                                        <linearGradient id="sportSky" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="0%" stop-color="#BAE6FD"/>
+                                            <stop offset="100%" stop-color="#E0F2FE"/>
+                                        </linearGradient>
+                                    </defs>
+                                    <rect width="400" height="420" fill="url(#sportSky)"/>
+                                    <!-- Awan Lembut -->
+                                    <circle cx="85" cy="70" r="24" fill="#FFFFFF" opacity="0.85"/>
+                                    <circle cx="110" cy="65" r="30" fill="#FFFFFF" opacity="0.85"/>
+                                    <circle cx="138" cy="72" r="22" fill="#FFFFFF" opacity="0.85"/>
+                                    <!-- Bukit & Taman Hijau -->
+                                    <path d="M0,250 Q120,190 250,235 T400,220 L400,420 L0,420 Z" fill="#A7F3D0"/>
+                                    <path d="M0,290 Q180,250 400,295 L400,420 L0,420 Z" fill="#6EE7B7"/>
+                                    <!-- Lintasan Lari Melengkung Estetik -->
+                                    <path d="M-20,390 Q180,285 420,360 L420,420 L-20,420 Z" fill="#FDE68A"/>
+                                    <path d="M-20,405 Q180,315 420,385" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-dasharray="10 8"/>
+                                    <!-- Pepohonan Bulat Estetik -->
+                                    <rect x="52" y="215" width="8" height="35" rx="4" fill="#92400E" opacity="0.45"/>
+                                    <circle cx="56" cy="200" r="26" fill="#34D399" opacity="0.75"/>
+                                    <rect x="332" y="200" width="8" height="38" rx="4" fill="#92400E" opacity="0.45"/>
+                                    <circle cx="336" cy="184" r="30" fill="#10B981" opacity="0.65"/>
+                                </svg>
+                            </div>
+
+                            <!-- Jadwal 2x Seminggu & Pilihan Olahraga -->
+                            <div class="kaih-card-body kaih-glass-box p-3 rounded-2xl border border-white/80 space-y-2.5">
+                                <div class="grid grid-cols-2 gap-2.5">
+                                    <div>
+                                        <label class="block text-[11px] font-bold text-jeans mb-1">Jadwal Hari 1:</label>
+                                        <select id="sportDay1" class="w-full p-2 rounded-xl border border-sky-200 bg-sky-50 text-xs font-semibold text-jeans">
+                                            <option value="Selasa">Selasa</option>
+                                            <option value="Senin">Senin</option>
+                                            <option value="Rabu" selected>Rabu</option>
+                                            <option value="Kamis">Kamis</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-[11px] font-bold text-jeans mb-1">Jadwal Hari 2:</label>
+                                        <select id="sportDay2" class="w-full p-2 rounded-xl border border-sky-200 bg-sky-50 text-xs font-semibold text-jeans">
+                                            <option value="Jumat">Jumat</option>
+                                            <option value="Sabtu" selected>Sabtu</option>
+                                            <option value="Minggu">Minggu</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-[11px] font-bold text-jeans mb-1">Pilih Jenis Olahraga:</label>
+                                    <select id="sportType" class="w-full p-2.5 rounded-xl border border-sky-200 bg-white text-xs font-bold text-denim focus:outline-none focus:border-denim">
+                                        <option value="Jumping Jacks">Jumping Jacks</option>
+                                        <option value="Squat">Squat</option>
+                                        <option value="Plank">Plank</option>
+                                        <option value="Sit Up">Sit Up</option>
+                                        <option value="Back Up">Back Up</option>
+                                        <option value="Lompat Tali">Lompat Tali (Skipping)</option>
+                                        <option value="Jogging">Jogging</option>
+                                        <option value="Berenang">Berenang</option>
+                                        <option value="Senam & Peregangan">Senam & Peregangan Lainnya</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Timer 10 - 15 Menit -->
+                            <div class="kaih-card-body bg-jeans-card text-white rounded-2xl p-3.5 text-center space-y-2.5 border border-skyLight/30 shadow-md">
+                                <div class="flex items-center justify-between text-[11px] text-skyLight">
+                                    <span>Timer Latihan</span>
+                                    <div class="flex gap-1">
+                                        <button type="button" onclick="setSportDuration(10)" class="px-2 py-0.5 rounded bg-denim hover:bg-sky-500 text-white font-bold cursor-pointer">10m</button>
+                                        <button type="button" onclick="setSportDuration(12)" class="px-2 py-0.5 rounded bg-denim hover:bg-sky-500 text-white font-bold cursor-pointer">12m</button>
+                                        <button type="button" onclick="setSportDuration(15)" class="px-2 py-0.5 rounded bg-denim hover:bg-sky-500 text-white font-bold cursor-pointer">15m</button>
+                                    </div>
+                                </div>
+                                <div id="sportTimerDisplay" class="font-display text-3xl font-extrabold text-butter tracking-wider">
+                                    10:00
+                                </div>
+                                <div class="flex justify-center gap-2">
+                                    <button type="button" id="btnStartTimer" onclick="toggleSportTimer()"
+                                        class="px-3.5 py-1.5 rounded-xl bg-butter text-jeans font-bold text-xs hover:brightness-105 transition flex items-center gap-1 cursor-pointer">
+                                        <i data-lucide="play" class="w-3.5 h-3.5"></i> Mulai
+                                    </button>
+                                    <button type="button" onclick="resetSportTimer()"
+                                        class="px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-white font-semibold text-xs transition flex items-center gap-1 cursor-pointer">
+                                        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> Reset
+                                    </button>
+                                </div>
+                            </div>
+
+                            <label class="kaih-card-body flex items-center gap-2.5 p-2.5 rounded-xl bg-sky-50/95 backdrop-blur-sm border border-sky-200 cursor-pointer">
+                                <input type="checkbox" id="sportDoneCheck" class="kaih-check w-4 h-4 accent-denim rounded">
+                                <span class="text-xs font-bold text-jeans">Saya sudah berolahraga sesuai jadwal/target hari ini</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- 4. ELEMEN MAKAN SEHAT BERGIZI ("ISI PIRINGKU" KEMENKES RI) -->
+                    <div class="bg-white rounded-3xl border border-sky-200 shadow-md overflow-hidden flex flex-col card-hover relative">
+                        <div class="bg-gradient-to-r from-denim to-jeans p-4 text-white flex items-center justify-between relative z-10">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-8 h-8 rounded-xl bg-butter text-jeans font-extrabold flex items-center justify-center text-sm">4</span>
+                                <div>
+                                    <h2 class="font-display font-bold text-lg leading-tight">Makan Sehat Bergizi</h2>
+                                    <p class="text-[11px] text-skyLight font-medium">Panduan "Isi Piringku" Kemenkes RI</p>
+                                </div>
+                            </div>
+                            <i data-lucide="utensils" class="w-6 h-6 text-butter"></i>
+                        </div>
+                        <div class="p-5 flex-1 flex flex-col justify-between space-y-3.5 relative overflow-hidden">
+                            <!-- Ilustrasi Aesthetic Meja Makan & Buah Sayur Segar -->
+                            <div class="kaih-bg-artwork">
+                                <svg viewBox="0 0 400 420" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                                    <rect width="400" height="420" fill="#FEFCE8"/>
+                                    <!-- Taplak Meja Pastel Kotak Lembut -->
+                                    <rect y="250" width="400" height="170" fill="#E0F2FE"/>
+                                    <!-- Piring Besar Estetik -->
+                                    <circle cx="290" cy="310" r="85" fill="#FFFFFF" stroke="#BAE6FD" stroke-width="6"/>
+                                    <circle cx="290" cy="310" r="65" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="2"/>
+                                    <!-- Ilustrasi Sayur & Buah di Piring -->
+                                    <circle cx="270" cy="295" r="18" fill="#4ADE80" opacity="0.75"/>
+                                    <circle cx="310" cy="295" r="16" fill="#FB923C" opacity="0.75"/>
+                                    <circle cx="288" cy="330" r="19" fill="#FACC15" opacity="0.8"/>
+                                    <!-- Gelas Air Putih Segar -->
+                                    <rect x="55" y="235" width="42" height="65" rx="8" fill="#BAE6FD" stroke="#7DD3FC" stroke-width="3"/>
+                                    <rect x="58" y="255" width="36" height="42" rx="5" fill="#38BDF8" opacity="0.55"/>
+                                    <!-- Buah Apel & Jeruk Dekoratif -->
+                                    <circle cx="135" cy="285" r="22" fill="#F87171" opacity="0.65"/>
+                                    <path d="M135,263 Q145,250 152,258" fill="none" stroke="#16A34A" stroke-width="4" stroke-linecap="round"/>
+                                </svg>
+                            </div>
+
+                            <!-- Visual Ringkas Isi Piringku -->
+                            <div class="kaih-card-body bg-sky-50/90 backdrop-blur-sm rounded-2xl p-3 border border-sky-200">
+                                <p class="text-xs font-bold text-jeans mb-2 flex items-center gap-1.5">
+                                    <i data-lucide="pie-chart" class="w-4 h-4 text-denim"></i>
+                                    Komposisi Sekali Makan ("Isi Piringku"):
+                                </p>
+                                <div class="grid grid-cols-2 gap-2 text-[11px]">
+                                    <div class="p-2 rounded-xl bg-white/95 border border-sky-100">
+                                        <span class="font-bold text-denim block">1/3 Makanan Pokok</span>
+                                        <span class="text-slate-600">Nasi, jagung, ubi, kentang, roti gandum</span>
+                                    </div>
+                                    <div class="p-2 rounded-xl bg-white/95 border border-sky-100">
+                                        <span class="font-bold text-denim block">1/3 Sayuran</span>
+                                        <span class="text-slate-600">Bayam, brokoli, wortel, kangkung</span>
+                                    </div>
+                                    <div class="p-2 rounded-xl bg-white/95 border border-sky-100">
+                                        <span class="font-bold text-jeans block">1/6 Lauk Pauk</span>
+                                        <span class="text-slate-600">Ikan, telur, ayam, tempe, tahu</span>
+                                    </div>
+                                    <div class="p-2 rounded-xl bg-white/95 border border-sky-100">
+                                        <span class="font-bold text-jeans block">1/6 Buah-buahan</span>
+                                        <span class="text-slate-600">Pisang, pepaya, jeruk, apel, semangka</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Saran Buah & Sayur -->
+                            <div class="kaih-card-body bg-butter-gradient/85 backdrop-blur-sm rounded-xl p-2.5 border border-yellow-300 text-[11px] text-jeans">
+                                <b>Saran Gizi Harian:</b> Konsumsi minimal 3 porsi sayur & 2 porsi buah warna-warni setiap hari serta minum 8 gelas air putih!
+                            </div>
+
+                            <!-- Ceklis Makan Sehat -->
+                            <div class="kaih-card-body kaih-glass-box p-3 rounded-2xl border border-white/80 space-y-1.5">
+                                <label class="flex items-center gap-2 text-xs font-medium text-slate-800 cursor-pointer">
+                                    <input type="checkbox" class="kaih-check food-check w-4 h-4 accent-denim rounded">
+                                    <span>Makan pokok & lauk berprotein hari ini</span>
+                                </label>
+                                <label class="flex items-center gap-2 text-xs font-medium text-slate-800 cursor-pointer">
+                                    <input type="checkbox" class="kaih-check food-check w-4 h-4 accent-denim rounded">
+                                    <span>Makan sayuran hijau/warna-warni</span>
+                                </label>
+                                <label class="flex items-center gap-2 text-xs font-medium text-slate-800 cursor-pointer">
+                                    <input type="checkbox" class="kaih-check food-check w-4 h-4 accent-denim rounded">
+                                    <span>Makan buah segar & cukup air putih</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 5. ELEMEN GEMAR BELAJAR (JURNAL CERITA SEKOLAH & PERASAAN) -->
+                    <div class="bg-white rounded-3xl border border-sky-200 shadow-md overflow-hidden flex flex-col card-hover relative">
+                        <div class="bg-gradient-to-r from-sky-500 to-denim p-4 text-white flex items-center justify-between relative z-10">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-8 h-8 rounded-xl bg-butter text-jeans font-extrabold flex items-center justify-center text-sm">5</span>
+                                <div>
+                                    <h2 class="font-display font-bold text-lg leading-tight">Gemar Belajar</h2>
+                                    <p class="text-[11px] text-butter font-medium">Jurnal Sekolah & Suasana Hati</p>
+                                </div>
+                            </div>
+                            <i data-lucide="book-open" class="w-6 h-6 text-butter"></i>
+                        </div>
+                        <div class="p-5 flex-1 flex flex-col justify-between space-y-3.5 relative overflow-hidden">
+                            <!-- Ilustrasi Aesthetic Meja Belajar, Buku & Lampu Baca -->
+                            <div class="kaih-bg-artwork">
+                                <svg viewBox="0 0 400 420" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                                    <rect width="400" height="420" fill="#F0F9FF"/>
+                                    <!-- Rak Buku Estetik -->
+                                    <rect x="35" y="45" width="145" height="10" rx="5" fill="#93C5FD"/>
+                                    <rect x="48" y="15" width="14" height="30" rx="3" fill="#3B82F6" opacity="0.6"/>
+                                    <rect x="66" y="18" width="16" height="27" rx="3" fill="#FACC15" opacity="0.75"/>
+                                    <rect x="86" y="12" width="14" height="33" rx="3" fill="#60A5FA" opacity="0.7"/>
+                                    <!-- Cahaya Lampu Meja -->
+                                    <polygon points="315,125 235,310 395,310" fill="#FEF08A" opacity="0.65"/>
+                                    <!-- Lampu Belajar -->
+                                    <path d="M315,295 L315,155 L295,125" fill="none" stroke="#1E3A8A" stroke-width="5" stroke-linecap="round"/>
+                                    <polygon points="280,130 330,130 318,105 292,105" fill="#3B82F6"/>
+                                    <!-- Meja Belajar -->
+                                    <rect y="295" width="400" height="125" fill="#DBEAFE"/>
+                                    <!-- Buku Terbuka -->
+                                    <path d="M90,285 Q145,270 195,288 Q245,270 300,285 L290,325 Q245,310 195,325 Q145,310 100,325 Z" fill="#FFFFFF" stroke="#93C5FD" stroke-width="3"/>
+                                </svg>
+                            </div>
+
+                            <!-- Pilihan Perasaan -->
+                            <div class="kaih-card-body kaih-glass-box p-3 rounded-2xl border border-white/80">
+                                <label class="block text-xs font-bold text-jeans mb-2">Bagaimana perasaanmu hari ini?</label>
+                                <div class="grid grid-cols-4 gap-2" id="moodSelector">
+                                    <button type="button" onclick="selectMood('Senang')" data-mood="Senang"
+                                        class="mood-btn p-2 rounded-xl border border-sky-200 bg-sky-50/90 hover:bg-butter/70 text-center transition cursor-pointer">
+                                        <span class="text-xl block">😄</span>
+                                        <span class="text-[11px] font-bold text-jeans">Senang</span>
+                                    </button>
+                                    <button type="button" onclick="selectMood('Bahagia')" data-mood="Bahagia"
+                                        class="mood-btn p-2 rounded-xl border border-sky-200 bg-sky-50/90 hover:bg-butter/70 text-center transition cursor-pointer">
+                                        <span class="text-xl block">🥰</span>
+                                        <span class="text-[11px] font-bold text-jeans">Bahagia</span>
+                                    </button>
+                                    <button type="button" onclick="selectMood('Biasa')" data-mood="Biasa"
+                                        class="mood-btn p-2 rounded-xl border border-sky-200 bg-sky-50/90 hover:bg-butter/70 text-center transition cursor-pointer">
+                                        <span class="text-xl block">🙂</span>
+                                        <span class="text-[11px] font-bold text-jeans">Biasa</span>
+                                    </button>
+                                    <button type="button" onclick="selectMood('Sedih')" data-mood="Sedih"
+                                        class="mood-btn p-2 rounded-xl border border-sky-200 bg-sky-50/90 hover:bg-butter/70 text-center transition cursor-pointer">
+                                        <span class="text-xl block">😢</span>
+                                        <span class="text-[11px] font-bold text-jeans">Sedih</span>
+                                    </button>
+                                </div>
+                                <input type="hidden" id="selectedMood" value="">
+                            </div>
+
+                            <!-- Kolom Ketik Cerita Sekolah -->
+                            <div class="kaih-card-body flex-1 flex flex-col kaih-glass-box p-3 rounded-2xl border border-white/80">
+                                <label for="schoolStory" class="block text-xs font-bold text-jeans mb-1.5">
+                                    Ceritakan pengalaman belajar atau kejadian di sekolah hari ini:
+                                </label>
+                                <textarea id="schoolStory" rows="4"
+                                    placeholder="Tuliskan hal baru yang kamu pelajari, teman yang kamu temui, atau perasaanmu hari ini..."
+                                    class="w-full flex-1 p-3 rounded-2xl border border-sky-200 bg-white/90 focus:bg-white focus:border-denim focus:ring-2 focus:ring-skyLight outline-none text-xs leading-relaxed resize-none"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 6. ELEMEN BERMASYARAKAT -->
+                    <div class="bg-white rounded-3xl border border-sky-200 shadow-md overflow-hidden flex flex-col card-hover relative">
+                        <div class="bg-gradient-to-r from-jeans to-sky-600 p-4 text-white flex items-center justify-between relative z-10">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-8 h-8 rounded-xl bg-butter text-jeans font-extrabold flex items-center justify-center text-sm">6</span>
+                                <div>
+                                    <h2 class="font-display font-bold text-lg leading-tight">Bermasyarakat</h2>
+                                    <p class="text-[11px] text-skyLight font-medium">Interaksi Sosial & Gotong Royong</p>
+                                </div>
+                            </div>
+                            <i data-lucide="users" class="w-6 h-6 text-butter"></i>
+                        </div>
+                        <div class="p-5 flex-1 flex flex-col justify-between space-y-2.5 relative overflow-hidden">
+                            <!-- Ilustrasi Aesthetic Lingkungan & Kebersamaan Warga -->
+                            <div class="kaih-bg-artwork">
+                                <svg viewBox="0 0 400 420" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                                    <rect width="400" height="420" fill="#E0F2FE"/>
+                                    <!-- Rumah-rumah Ramah Pastel -->
+                                    <polygon points="45,215 95,170 145,215" fill="#3B82F6" opacity="0.6"/>
+                                    <rect x="55" y="215" width="80" height="65" rx="6" fill="#FFFFFF"/>
+                                    <rect x="85" y="240" width="20" height="40" rx="4" fill="#FDE047"/>
+
+                                    <polygon points="245,210 305,160 365,210" fill="#1E3A8A" opacity="0.55"/>
+                                    <rect x="258" y="210" width="94" height="70" rx="6" fill="#FEF9C3"/>
+                                    <rect x="295" y="238" width="22" height="42" rx="4" fill="#93C5FD"/>
+                                    <!-- Taman & Jalan Setapak -->
+                                    <path d="M0,275 Q200,255 400,275 L400,420 L0,420 Z" fill="#BBF7D0"/>
+                                    <path d="M165,420 Q195,330 215,272 L245,272 Q235,330 255,420 Z" fill="#FDE68A" opacity="0.8"/>
+                                    <!-- Pohon Rindang -->
+                                    <circle cx="195" cy="215" r="32" fill="#34D399" opacity="0.7"/>
+                                </svg>
+                            </div>
+
+                            <div class="kaih-card-body kaih-glass-box p-3 rounded-2xl border border-white/80 space-y-2">
+                                <p class="text-xs font-bold text-jeans">Refleksi Interaksi Sosial Hari Ini:</p>
+                                
+                                <label class="flex items-start gap-2.5 p-2.5 rounded-xl bg-sky-50/90 hover:bg-sky-100/80 border border-sky-100 cursor-pointer transition">
+                                    <input type="checkbox" class="kaih-check social-check mt-0.5 w-4 h-4 accent-denim rounded">
+                                    <span class="text-xs font-medium text-slate-800 leading-snug">
+                                        Sudahkah kamu berinteraksi & menyapa ramah orang sekitarmu hari ini?
+                                    </span>
+                                </label>
+
+                                <label class="flex items-start gap-2.5 p-2.5 rounded-xl bg-sky-50/90 hover:bg-sky-100/80 border border-sky-100 cursor-pointer transition">
+                                    <input type="checkbox" class="kaih-check social-check mt-0.5 w-4 h-4 accent-denim rounded">
+                                    <span class="text-xs font-medium text-slate-800 leading-snug">
+                                        Apakah kamu membantu teman, guru, atau anggota keluarga yang kesulitan?
+                                    </span>
+                                </label>
+
+                                <label class="flex items-start gap-2.5 p-2.5 rounded-xl bg-sky-50/90 hover:bg-sky-100/80 border border-sky-100 cursor-pointer transition">
+                                    <input type="checkbox" class="kaih-check social-check mt-0.5 w-4 h-4 accent-denim rounded">
+                                    <span class="text-xs font-medium text-slate-800 leading-snug">
+                                        Apakah kamu ikut serta dalam kegiatan gotong royong / piket kebersihan?
+                                    </span>
+                                </label>
+
+                                <label class="flex items-start gap-2.5 p-2.5 rounded-xl bg-sky-50/90 hover:bg-sky-100/80 border border-sky-100 cursor-pointer transition">
+                                    <input type="checkbox" class="kaih-check social-check mt-0.5 w-4 h-4 accent-denim rounded">
+                                    <span class="text-xs font-medium text-slate-800 leading-snug">
+                                        Sudahkah kamu bermusyawarah & menghargai pendapat teman saat berdiskusi?
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 7. ELEMEN TIDUR CEPAT (SPAN FULL ON XL FOR BALANCE) -->
+                    <div class="bg-white rounded-3xl border border-sky-200 shadow-md overflow-hidden flex flex-col md:col-span-2 xl:col-span-3 card-hover relative">
+                        <div class="bg-jeans-card p-4 text-white flex items-center justify-between relative z-10">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-8 h-8 rounded-xl bg-butter text-jeans font-extrabold flex items-center justify-center text-sm">7</span>
+                                <div>
+                                    <h2 class="font-display font-bold text-lg leading-tight">Tidur Cepat</h2>
+                                    <p class="text-[11px] text-skyLight font-medium">Detoks Gawai & Waktu Tidur Optimal</p>
+                                </div>
+                            </div>
+                            <i data-lucide="moon-star" class="w-6 h-6 text-butter"></i>
+                        </div>
+                        <div class="p-5 grid grid-cols-1 lg:grid-cols-3 gap-5 items-center relative overflow-hidden">
+                            <!-- Ilustrasi Aesthetic Kamar Malam, Bulan & Bintang -->
+                            <div class="kaih-bg-artwork">
+                                <svg viewBox="0 0 900 260" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                                    <defs>
+                                        <linearGradient id="nightRoom" x1="0" y1="0" x2="1" y2="1">
+                                            <stop offset="0%" stop-color="#DBEAFE"/>
+                                            <stop offset="50%" stop-color="#BFDBFE"/>
+                                            <stop offset="100%" stop-color="#93C5FD"/>
+                                        </linearGradient>
+                                    </defs>
+                                    <rect width="900" height="260" fill="url(#nightRoom)"/>
+                                    <!-- Jendela Malam Berbintang -->
+                                    <rect x="650" y="25" width="190" height="155" rx="18" fill="#1E3A8A" stroke="#60A5FA" stroke-width="5"/>
+                                    <!-- Bulan Sabit Butter Yellow -->
+                                    <path d="M775,52 A24,24 0 1,0 802,88 A19,19 0 1,1 775,52 Z" fill="#FEF08A"/>
+                                    <!-- Bintang-Bintang Berkilau -->
+                                    <circle cx="690" cy="65" r="3" fill="#FEF08A"/>
+                                    <circle cx="725" cy="95" r="2.5" fill="#FFFFFF"/>
+                                    <circle cx="705" cy="128" r="3" fill="#FEF08A"/>
+                                    <circle cx="805" cy="125" r="2.5" fill="#FFFFFF"/>
+                                    <!-- Awan Malam Lembut -->
+                                    <ellipse cx="140" cy="210" rx="130" ry="45" fill="#EFF6FF" opacity="0.75"/>
+                                    <ellipse cx="430" cy="225" rx="160" ry="50" fill="#EFF6FF" opacity="0.7"/>
+                                </svg>
+                            </div>
+
+                            <!-- Input Waktu Terakhir Menggunakan Gawai -->
+                            <div class="kaih-card-body bg-sky-50/90 backdrop-blur-sm rounded-2xl p-4 border border-sky-200 space-y-2">
+                                <label for="lastGadgetTime" class="block text-xs font-bold text-jeans flex items-center gap-1.5">
+                                    <i data-lucide="smartphone-off" class="w-4 h-4 text-denim"></i>
+                                    Waktu Terakhir Menggunakan Gawai Hari Ini:
+                                </label>
+                                <div class="flex items-center gap-3">
+                                    <input type="time" id="lastGadgetTime" value="20:30"
+                                        class="px-3 py-2 rounded-xl border border-sky-300 bg-white text-jeans font-extrabold text-base focus:outline-none focus:border-denim">
+                                    <span id="gadgetStatusBadge" class="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 text-[11px] font-bold">
+                                        Ideal (&le; 21:00)
+                                    </span>
+                                </div>
+                                <p class="text-[11px] text-slate-600">
+                                    Hentikan layar gawai minimal 30-60 menit sebelum tidur agar kualitas tidur nyenyak.
+                                </p>
+                            </div>
+
+                            <!-- Informasi Waktu Optimal Tidur dalam 1 Hari -->
+                            <div class="kaih-card-body bg-butter-gradient/85 backdrop-blur-sm rounded-2xl p-4 border border-yellow-300 space-y-1.5">
+                                <h3 class="text-xs font-extrabold text-jeans flex items-center gap-1.5">
+                                    <i data-lucide="info" class="w-4 h-4 text-jeans"></i>
+                                    Informasi Waktu Optimal Tidur (1 Hari):
+                                </h3>
+                                <ul class="text-xs text-slate-800 space-y-1 leading-relaxed">
+                                    <li>• <b>Usia SD (6–12 tahun):</b> Optimal <b>9 – 12 jam</b> per hari (Tidur pukul 20.30 - 21.00).</li>
+                                    <li>• <b>Usia SMP/SMA (13–18 tahun):</b> Optimal <b>8 – 10 jam</b> per hari (Maksimal pukul 21.30).</li>
+                                    <li>• Tidur cukup meningkatkan daya ingat, konsentrasi belajar, dan pertumbuhan fisik.</li>
+                                </ul>
+                            </div>
+
+                            <!-- Konfirmasi Tidur Cepat -->
+                            <div class="kaih-card-body flex flex-col justify-center space-y-3">
+                                <label class="flex items-center gap-3 p-3.5 rounded-2xl bg-sky-50/90 hover:bg-sky-100 backdrop-blur-sm border border-sky-200 cursor-pointer transition">
+                                    <input type="checkbox" id="sleepReadyCheck" class="kaih-check w-5 h-5 accent-denim rounded">
+                                    <span class="text-xs font-bold text-jeans leading-snug">
+                                        Saya berkomitmen mematikan gawai tepat waktu & tidur cepat malam ini!
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Tombol Simpan Data Hari Ini -->
+                <div class="bg-white rounded-3xl p-5 border-2 border-denim/30 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-2xl bg-sky-denim-gradient text-jeans flex items-center justify-center shrink-0">
+                            <i data-lucide="save" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-display font-bold text-base text-jeans">Simpan Progres 7 KAIH Hari Ini</h3>
+                            <p class="text-xs text-slate-500">Data akan otomatis direkap ke dalam grafik perkembangan 1 bulan terakhir.</p>
+                        </div>
+                    </div>
+                    <button type="button" onclick="saveDailyRecord()"
+                        class="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-butter-gradient hover:brightness-105 text-jeans font-display font-extrabold text-sm shadow-md border border-yellow-400 flex items-center justify-center gap-2 transition transform active:scale-95 cursor-pointer">
+                        <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+                        <span>Simpan & Rekap Data</span>
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- ================================================================= -->
+            <!-- PANEL B: REKAP DATA & GRAFIK PERKEMBANGAN 1 BULAN TERAKHIR        -->
+            <!-- ================================================================= -->
+            <div id="panelRekap" class="hidden space-y-6">
+                
+                <!-- Ringkasan Statistik 30 Hari -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-white p-5 rounded-3xl border border-sky-200 shadow-sm">
+                        <span class="text-xs font-bold text-slate-500 uppercase">Rata-Rata Capaian (30 Hari)</span>
+                        <div class="mt-2 flex items-baseline justify-between">
+                            <span id="statAvgScore" class="font-display text-3xl font-extrabold text-jeans">0%</span>
+                            <span class="px-2.5 py-0.5 rounded-full bg-butter text-jeans text-xs font-bold">Bulan Ini</span>
+                        </div>
+                    </div>
+                    <div class="bg-white p-5 rounded-3xl border border-sky-200 shadow-sm">
+                        <span class="text-xs font-bold text-slate-500 uppercase">Total Hari Tercatat</span>
+                        <div class="mt-2 flex items-baseline justify-between">
+                            <span id="statTotalDays" class="font-display text-3xl font-extrabold text-denim">0 Hari</span>
+                            <i data-lucide="calendar-check" class="w-6 h-6 text-skyLight"></i>
+                        </div>
+                    </div>
+                    <div class="bg-white p-5 rounded-3xl border border-sky-200 shadow-sm">
+                        <span class="text-xs font-bold text-slate-500 uppercase">Elemen Terkuat</span>
+                        <div class="mt-2 flex items-baseline justify-between">
+                            <span id="statBestElement" class="font-display text-lg font-extrabold text-jeans truncate">-</span>
+                            <i data-lucide="award" class="w-6 h-6 text-butterDark"></i>
+                        </div>
+                    </div>
+                    <div class="bg-white p-5 rounded-3xl border border-sky-200 shadow-sm">
+                        <span class="text-xs font-bold text-slate-500 uppercase">Suasana Hati Dominan</span>
+                        <div class="mt-2 flex items-baseline justify-between">
+                            <span id="statDominantMood" class="font-display text-xl font-extrabold text-denim">-</span>
+                            <i data-lucide="smile" class="w-6 h-6 text-skyLight"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grafik Perkembangan 1 Bulan Terakhir -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Line/Bar Chart Tren 30 Hari -->
+                    <div class="lg:col-span-2 bg-white p-5 sm:p-6 rounded-3xl border border-sky-200 shadow-md">
+                        <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+                            <div>
+                                <h3 class="font-display font-bold text-lg text-jeans">Grafik Perkembangan Siswa (30 Hari Terakhir)</h3>
+                                <p class="text-xs text-slate-500">Persentase ketuntasan harian seluruh elemen 7 KAIH</p>
+                            </div>
+                            <button type="button" onclick="generateDemoMonthData()"
+                                class="px-3 py-1.5 rounded-xl bg-sky-100 hover:bg-sky-200 text-jeans text-xs font-bold transition cursor-pointer">
+                                + Isi Simulasi 30 Hari
+                            </button>
+                        </div>
+                        <div class="relative h-72 w-full">
+                            <canvas id="monthlyTrendChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Radar Chart Keseimbangan 7 Elemen -->
+                    <div class="bg-white p-5 sm:p-6 rounded-3xl border border-sky-200 shadow-md">
+                        <div class="mb-4">
+                            <h3 class="font-display font-bold text-lg text-jeans">Keseimbangan 7 Elemen</h3>
+                            <p class="text-xs text-slate-500">Rata-rata skor per kebiasaan dalam 1 bulan</p>
+                        </div>
+                        <div class="relative h-72 w-full">
+                            <canvas id="elementRadarChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabel Riwayat Rekap Data -->
+                <div class="bg-white rounded-3xl border border-sky-200 shadow-md overflow-hidden">
+                    <div class="bg-wavorazca-header px-6 py-4 text-white flex items-center justify-between">
+                        <h3 class="font-display font-bold text-base">Riwayat Rekapitulasi Harian Siswa</h3>
+                        <span class="text-xs text-butter font-semibold">Menampilkan data tersimpan</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-sky-50 text-jeans text-xs uppercase border-b border-sky-200">
+                                    <th class="py-3 px-4 font-bold">Tanggal</th>
+                                    <th class="py-3 px-4 font-bold">Alarm / Tidur</th>
+                                    <th class="py-3 px-4 font-bold">Olahraga</th>
+                                    <th class="py-3 px-4 font-bold">Perasaan & Cerita</th>
+                                    <th class="py-3 px-4 font-bold text-right">Skor Total</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rekapTableBody" class="divide-y divide-sky-100 text-xs">
+                                <!-- Diisi via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- JAVASCRIPT LOGIC                                                      -->
+    <!-- ===================================================================== -->
+    <script>
+        // Data Jadwal, Aktivitas Beribadah & Ilustrasi Tempat Ibadah untuk 6 Agama Resmi di Indonesia
+        const RELIGION_DATA = {
+            "Islam": {
+                desc: "Melaksanakan shalat wajib 5 waktu tepat waktu, berdoa setelah shalat, serta membaca Al-Qur'an / dzikir pagi & petang.",
+                artwork: `
+                    <svg viewBox="0 0 400 420" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="400" height="420" fill="#E0F2FE"/>
+                        <circle cx="320" cy="70" r="22" fill="#FEF08A"/>
+                        <!-- Siluet Masjid Estetik -->
+                        <path d="M135,190 Q200,115 265,190 Z" fill="#3B82F6" opacity="0.65"/>
+                        <rect x="197" y="102" width="6" height="22" fill="#1E3A8A"/>
+                        <circle cx="200" cy="98" r="7" fill="#FACC15"/>
+                        <!-- Menara Kiri & Kanan -->
+                        <rect x="85" y="140" width="24" height="170" rx="4" fill="#93C5FD"/>
+                        <path d="M82,140 Q97,112 112,140 Z" fill="#2563EB" opacity="0.7"/>
+                        <rect x="291" y="140" width="24" height="170" rx="4" fill="#93C5FD"/>
+                        <path d="M288,140 Q303,112 318,140 Z" fill="#2563EB" opacity="0.7"/>
+                        <!-- Bangunan Utama -->
+                        <rect x="115" y="190" width="170" height="120" rx="8" fill="#FFFFFF"/>
+                        <path d="M175,310 L175,245 Q200,220 225,245 L225,310 Z" fill="#BAE6FD"/>
+                        <rect y="310" width="400" height="110" fill="#BAE6FD"/>
+                    </svg>`,
+                tasks: [
+                    "04:30 - Shalat Subuh & Dzikir Pagi",
+                    "12:00 - Shalat Dzuhur",
+                    "15:15 - Shalat Ashar",
+                    "18:00 - Shalat Maghrib & Tadarus Al-Qur'an",
+                    "19:15 - Shalat Isya & Doa Sebelum Tidur"
+                ]
+            },
+            "Kristen Protestan": {
+                desc: "Melakukan Saat Teduh (doa pribadi & membaca Alkitab) di pagi dan malam hari, mengucap syukur sebelum makan, serta beribadah.",
+                artwork: `
+                    <svg viewBox="0 0 400 420" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="400" height="420" fill="#E0F2FE"/>
+                        <circle cx="85" cy="75" r="28" fill="#FEF08A" opacity="0.85"/>
+                        <!-- Gereja Estetik Pastel -->
+                        <rect x="180" y="95" width="40" height="85" fill="#93C5FD"/>
+                        <polygon points="172,95 200,52 228,95" fill="#2563EB" opacity="0.7"/>
+                        <rect x="197" y="28" width="6" height="26" fill="#1E3A8A"/>
+                        <rect x="190" y="36" width="20" height="5" fill="#1E3A8A"/>
+                        <polygon points="105,180 200,120 295,180" fill="#3B82F6" opacity="0.65"/>
+                        <rect x="120" y="180" width="160" height="135" rx="8" fill="#FFFFFF"/>
+                        <path d="M180,315 L180,245 Q200,225 220,245 L220,315 Z" fill="#FDE68A"/>
+                        <rect y="315" width="400" height="105" fill="#BBF7D0"/>
+                    </svg>`,
+                tasks: [
+                    "05:30 - Saat Teduh Pagi & Pembacaan Firman Tuhan",
+                    "07:00 - Doa Syukur Memulai Aktivitas Sekolah",
+                    "12:30 - Doa Syukur Makan Siang",
+                    "19:00 - Persekutuan Doa Keluarga / Ibadah",
+                    "21:00 - Doa Malam & Refleksi Syukur"
+                ]
+            },
+            "Katolik": {
+                desc: "Melaksanakan doa pagi, Doa Malaikat Tuhan (Angelus), membaca Kitab Suci, doa Rosario, dan pemeriksaan batin malam.",
+                artwork: `
+                    <svg viewBox="0 0 400 420" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="400" height="420" fill="#EFF6FF"/>
+                        <circle cx="315" cy="75" r="26" fill="#FEF08A" opacity="0.9"/>
+                        <!-- Katedral / Kapel Estetik -->
+                        <polygon points="110,175 200,105 290,175" fill="#2563EB" opacity="0.65"/>
+                        <rect x="197" y="75" width="6" height="32" fill="#1E3A8A"/>
+                        <rect x="189" y="84" width="22" height="5" fill="#1E3A8A"/>
+                        <rect x="125" y="175" width="150" height="140" rx="8" fill="#FFFFFF"/>
+                        <circle cx="200" cy="205" r="22" fill="#FEF08A" stroke="#93C5FD" stroke-width="4"/>
+                        <path d="M180,315 L180,255 Q200,235 220,255 L220,315 Z" fill="#BAE6FD"/>
+                        <rect y="315" width="400" height="105" fill="#DBEAFE"/>
+                    </svg>`,
+                tasks: [
+                    "05:30 - Doa Pagi & Persembahan Harian",
+                    "12:00 - Doa Malaikat Tuhan (Angelus) Siang",
+                    "18:00 - Doa Angelus Petang & Doa Rosario",
+                    "19:30 - Membaca & Merenungkan Kitab Suci",
+                    "21:00 - Pemeriksaan Batin & Doa Malam"
+                ]
+            },
+            "Hindu": {
+                desc: "Melaksanakan Puja Tri Sandhya 3 kali sehari (pagi, siang, sore), menghaturkan canang/yadnya sesa, serta membaca sloka Bhagavad Gita.",
+                artwork: `
+                    <svg viewBox="0 0 400 420" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="400" height="420" fill="#FEFCE8"/>
+                        <circle cx="200" cy="85" r="34" fill="#FDE047" opacity="0.75"/>
+                        <!-- Candi Bentar & Meru Pura Estetik -->
+                        <polygon points="165,120 200,72 235,120" fill="#3B82F6" opacity="0.7"/>
+                        <polygon points="155,155 200,112 245,155" fill="#2563EB" opacity="0.75"/>
+                        <polygon points="145,190 200,145 255,190" fill="#1E3A8A" opacity="0.7"/>
+                        <rect x="165" y="190" width="70" height="125" fill="#FFFFFF"/>
+                        <!-- Candi Bentar Kiri Kanan -->
+                        <polygon points="75,315 110,175 125,175 125,315" fill="#93C5FD"/>
+                        <polygon points="325,315 290,175 275,175 275,315" fill="#93C5FD"/>
+                        <rect y="315" width="400" height="105" fill="#BBF7D0"/>
+                    </svg>`,
+                tasks: [
+                    "06:00 - Puja Tri Sandhya Pagi & Kramaning Sembah",
+                    "07:00 - Menghaturkan Yadnya Sesa / Canang Sari",
+                    "12:00 - Puja Tri Sandhya Siang",
+                    "18:00 - Puja Tri Sandhya Sore",
+                    "20:30 - Membaca Sloka Suci & Doa Sebelum Tidur"
+                ]
+            },
+            "Buddha": {
+                desc: "Melakukan Puja Bakti pagi dan malam di altar/vihara, membaca Paritta Suci, serta melatih meditasi ketenangan (Samatha/Vipassana).",
+                artwork: `
+                    <svg viewBox="0 0 400 420" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="400" height="420" fill="#F0F9FF"/>
+                        <circle cx="200" cy="115" r="46" fill="#FEF08A" opacity="0.8"/>
+                        <!-- Stupa & Vihara Estetik -->
+                        <polygon points="196,65 200,40 204,65" fill="#F59E0B"/>
+                        <path d="M145,195 Q145,110 200,110 Q255,110 255,195 Z" fill="#93C5FD"/>
+                        <rect x="125" y="195" width="150" height="25" rx="6" fill="#3B82F6" opacity="0.7"/>
+                        <rect x="105" y="220" width="190" height="95" rx="8" fill="#FFFFFF"/>
+                        <!-- Bunga Teratai Lembut -->
+                        <ellipse cx="200" cy="335" rx="45" ry="14" fill="#F9A8D4" opacity="0.7"/>
+                        <rect y="315" width="400" height="105" fill="#BAE6FD"/>
+                    </svg>`,
+                tasks: [
+                    "05:30 - Puja Bakti Pagi & Membaca Paritta Suci",
+                    "06:00 - Meditasi Pagi (10 Menit)",
+                    "12:00 - Perenungan Makanan Sebelum Makan Siang",
+                    "19:00 - Puja Bakti Malam & Mengembangkan Metta (Cinta Kasih)",
+                    "21:00 - Refleksi Perbuatan Baik & Meditasi Malam"
+                ]
+            },
+            "Khonghucu": {
+                desc: "Melaksanakan sembahyang kepada Tian (Tuhan YME) dan leluhur di pagi dan sore hari (Zao Wan Xiang), serta merenungkan kitab Si Shu.",
+                artwork: `
+                    <svg viewBox="0 0 400 420" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="400" height="420" fill="#FEFCE8"/>
+                        <!-- Atap Kelenteng / Litang Melengkung Estetik -->
+                        <path d="M85,155 Q200,110 315,155 L290,175 Q200,145 110,175 Z" fill="#2563EB" opacity="0.75"/>
+                        <path d="M65,205 Q200,160 335,205 L310,222 Q200,192 90,222 Z" fill="#3B82F6" opacity="0.75"/>
+                        <!-- Lampion Kuning Hangat -->
+                        <circle cx="95" cy="238" r="14" fill="#FACC15"/>
+                        <circle cx="305" cy="238" r="14" fill="#FACC15"/>
+                        <!-- Pilar & Bangunan -->
+                        <rect x="115" y="220" width="170" height="95" fill="#FFFFFF"/>
+                        <rect x="130" y="220" width="12" height="95" fill="#93C5FD"/>
+                        <rect x="258" y="220" width="12" height="95" fill="#93C5FD"/>
+                        <rect y="315" width="400" height="105" fill="#FDE68A" opacity="0.6"/>
+                    </svg>`,
+                tasks: [
+                    "05:30 - Sembahyang Pagi (Zao Xiang) Menghadap Tian",
+                    "07:00 - Mengamalkan Kebajikan (Ren, Yi, Li, Zhi, Xin)",
+                    "12:00 - Doa Syukur Sebelum Makan Siang",
+                    "18:00 - Sembahyang Sore (Wan Xiang) & Penghormatan Leluhur",
+                    "20:30 - Membaca Sabda Suci Kitab Si Shu & Introspeksi Diri"
+                ]
+            }
+        };
+
+        // State Aplikasi (In-Memory untuk sesi aktif, terstruktur rapi)
+        let currentUser = null;
+        let monthlyRecords = []; // Menyimpan rekap 30 hari terakhir
+        let trendChartInstance = null;
+        let radarChartInstance = null;
+
+        // Timer Olahraga Variables
+        let sportSecondsLeft = 10 * 60;
+        let sportTimerInterval = null;
+        let isTimerRunning = false;
+
+        // Inisialisasi Ikon Lucide & Event Listeners saat halaman dimuat
+        document.addEventListener("DOMContentLoaded", () => {
+            lucide.createIcons();
+            setFormattedDate();
+
+            // Jalankan layar sambutan animasi logo selama 2,5 detik lalu masuk ke halaman login
+            setTimeout(() => {
+                const splash = document.getElementById("splashScreen");
+                const loginPage = document.getElementById("loginPage");
+                splash.classList.add("splash-fade-out");
+                loginPage.classList.remove("hidden");
+                setTimeout(() => {
+                    splash.classList.add("hidden");
+                }, 450);
+            }, 2500);
+
+            // Event Login
+            document.getElementById("loginForm").addEventListener("submit", handleLogin);
+
+            // Update status badge waktu gawai
+            document.getElementById("lastGadgetTime").addEventListener("change", updateGadgetStatusBadge);
+
+            // Hitung skor real-time saat input berubah
+            document.addEventListener("change", (e) => {
+                if (e.target.classList.contains("kaih-check") || e.target.id === "lastGadgetTime") {
+                    updateTodayScoreUI();
+                }
+            });
+            document.getElementById("schoolStory").addEventListener("input", updateTodayScoreUI);
+        });
+
+        // Menampilkan Toast Notifikasi Kustom (Tanpa alert)
+        function showToast(message, type = "success") {
+            const container = document.getElementById("toastContainer");
+            const toast = document.createElement("div");
+            const bgClass = type === "success"
+                ? "bg-jeans text-white border-butter"
+                : "bg-amber-500 text-jeans border-jeans";
+
+            toast.className = `pointer-events-auto px-4 py-3 rounded-2xl shadow-xl border-2 ${bgClass} text-xs sm:text-sm font-bold flex items-center gap-2.5 transition-all duration-300 transform translate-x-0`;
+            toast.innerHTML = `
+                <i data-lucide="${type === 'success' ? 'check-circle' : 'alert-circle'}" class="w-5 h-5 text-butter shrink-0"></i>
+                <span>${message}</span>
+            `;
+            container.appendChild(toast);
+            lucide.createIcons();
+
+            setTimeout(() => {
+                toast.classList.add("opacity-0", "translate-x-5");
+                setTimeout(() => toast.remove(), 300);
+            }, 3200);
+        }
+
+        function setFormattedDate() {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const todayStr = new Date().toLocaleDateString('id-ID', options);
+            document.getElementById("currentDateLabel").textContent = todayStr;
+        }
+
+        // Proses Login Halaman 1 -> Halaman 2
+        function handleLogin(e) {
+            e.preventDefault();
+            const name = document.getElementById("studentName").value.trim();
+            const email = document.getElementById("studentEmail").value.trim();
+            const religion = document.getElementById("studentReligion").value;
+
+            if (!name || !email || !religion) {
+                showToast("Mohon lengkapi nama, email, dan agama Anda.", "warning");
+                return;
+            }
+
+            currentUser = { name, email, religion };
+
+            // Update UI Navbar
+            document.getElementById("navStudentName").textContent = name;
+            document.getElementById("navStudentEmail").textContent = email;
+            document.getElementById("navStudentReligion").textContent = religion;
+            document.getElementById("mobileStudentName").textContent = `${name} (${email})`;
+            document.getElementById("mobileStudentReligion").textContent = religion;
+
+            // Render konten agama pada Elemen 2 (Beribadah)
+            renderReligionElement(religion);
+
+            // Seed awal data 7 hari terakhir agar grafik langsung terlihat informatif, namun tetap dapat ditambah/diupdate
+            seedInitialWeekData();
+
+            // Pindah halaman
+            document.getElementById("loginPage").classList.add("hidden");
+            document.getElementById("dashboardPage").classList.remove("hidden");
+            lucide.createIcons();
+            updateTodayScoreUI();
+            showToast(`Selamat datang di WAVORAZCA, ${name}!`);
+        }
+
+        function logoutStudent() {
+            clearInterval(sportTimerInterval);
+            isTimerRunning = false;
+            document.getElementById("dashboardPage").classList.add("hidden");
+            document.getElementById("loginPage").classList.remove("hidden");
+            showToast("Anda telah keluar dari sesi siswa.");
+        }
+
+        // Render Elemen 2: Beribadah sesuai agama yang dipilih
+        function renderReligionElement(religion) {
+            const data = RELIGION_DATA[religion];
+            document.getElementById("ibadahReligionSubtitle").textContent = `Agama: ${religion}`;
+            document.getElementById("ibadahDescription").textContent = data.desc;
+            document.getElementById("ibadahBgArtwork").innerHTML = data.artwork;
+
+            const container = document.getElementById("ibadahChecklistContainer");
+            container.innerHTML = "";
+
+            data.tasks.forEach((task, idx) => {
+                const label = document.createElement("label");
+                label.className = "flex items-center gap-2.5 p-2 rounded-xl hover:bg-sky-50/90 border border-transparent hover:border-sky-100 cursor-pointer transition";
+                label.innerHTML = `
+                    <input type="checkbox" class="kaih-check ibadah-check w-4 h-4 accent-denim rounded" value="${task}">
+                    <span class="text-xs font-medium text-slate-800">${task}</span>
+                `;
+                container.appendChild(label);
+            });
+        }
+
+        // Logika Timer Olahraga (10 - 15 Menit)
+        function setSportDuration(minutes) {
+            clearInterval(sportTimerInterval);
+            isTimerRunning = false;
+            sportSecondsLeft = minutes * 60;
+            updateTimerDisplay();
+            const btn = document.getElementById("btnStartTimer");
+            btn.innerHTML = `<i data-lucide="play" class="w-3.5 h-3.5"></i> Mulai`;
+            lucide.createIcons();
+        }
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(sportSecondsLeft / 60).toString().padStart(2, '0');
+            const secs = (sportSecondsLeft % 60).toString().padStart(2, '0');
+            document.getElementById("sportTimerDisplay").textContent = `${mins}:${secs}`;
+        }
+
+        function toggleSportTimer() {
+            const btn = document.getElementById("btnStartTimer");
+            if (isTimerRunning) {
+                clearInterval(sportTimerInterval);
+                isTimerRunning = false;
+                btn.innerHTML = `<i data-lucide="play" class="w-3.5 h-3.5"></i> Lanjut`;
+            } else {
+                isTimerRunning = true;
+                btn.innerHTML = `<i data-lucide="pause" class="w-3.5 h-3.5"></i> Jeda`;
+                sportTimerInterval = setInterval(() => {
+                    if (sportSecondsLeft > 0) {
+                        sportSecondsLeft--;
+                        updateTimerDisplay();
+                    } else {
+                        clearInterval(sportTimerInterval);
+                        isTimerRunning = false;
+                        document.getElementById("sportDoneCheck").checked = true;
+                        updateTodayScoreUI();
+                        showToast("Hebat! Target waktu olahraga selesai!");
+                    }
+                }, 1000);
+            }
+            lucide.createIcons();
+        }
+
+        function resetSportTimer() {
+            setSportDuration(10);
+        }
+
+        // Pilihan Perasaan Elemen 5 (Gemar Belajar)
+        function selectMood(mood) {
+            document.getElementById("selectedMood").value = mood;
+            document.querySelectorAll(".mood-btn").forEach(btn => {
+                if (btn.dataset.mood === mood) {
+                    btn.classList.remove("bg-sky-50", "border-sky-200");
+                    btn.classList.add("bg-butter-gradient", "border-jeans", "ring-2", "ring-denim");
+                } else {
+                    btn.classList.add("bg-sky-50", "border-sky-200");
+                    btn.classList.remove("bg-butter-gradient", "border-jeans", "ring-2", "ring-denim");
+                }
+            });
+            updateTodayScoreUI();
+        }
+
+        // Update Badge Waktu Gawai Elemen 7
+        function updateGadgetStatusBadge() {
+            const timeVal = document.getElementById("lastGadgetTime").value;
+            const badge = document.getElementById("gadgetStatusBadge");
+            if (timeVal <= "21:00") {
+                badge.textContent = "Ideal (≤ 21:00)";
+                badge.className = "px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 text-[11px] font-bold";
+            } else {
+                badge.textContent = "Terlalu Malam (> 21:00)";
+                badge.className = "px-2.5 py-1 rounded-lg bg-amber-100 text-amber-800 text-[11px] font-bold";
+            }
+        }
+
+        // Kalkulasi Skor Masing-Masing 7 Elemen (Skala 0 - 100 per elemen)
+        function calculateElementScores() {
+            // 1. Bangun Pagi
+            const bangunChecks = document.querySelectorAll(".bangun-check");
+            const bangunChecked = document.querySelectorAll(".bangun-check:checked").length;
+            const s1 = Math.round((bangunChecked / bangunChecks.length) * 100);
+
+            // 2. Beribadah
+            const ibadahChecks = document.querySelectorAll(".ibadah-check");
+            const ibadahChecked = document.querySelectorAll(".ibadah-check:checked").length;
+            const s2 = ibadahChecks.length ? Math.round((ibadahChecked / ibadahChecks.length) * 100) : 0;
+
+            // 3. Berolahraga
+            const s3 = document.getElementById("sportDoneCheck").checked ? 100 : 0;
+
+            // 4. Makan Sehat Bergizi
+            const foodChecks = document.querySelectorAll(".food-check");
+            const foodChecked = document.querySelectorAll(".food-check:checked").length;
+            const s4 = Math.round((foodChecked / foodChecks.length) * 100);
+
+            // 5. Gemar Belajar
+            const hasMood = document.getElementById("selectedMood").value !== "";
+            const hasStory = document.getElementById("schoolStory").value.trim().length > 3;
+            const s5 = (hasMood ? 50 : 0) + (hasStory ? 50 : 0);
+
+            // 6. Bermasyarakat
+            const socialChecks = document.querySelectorAll(".social-check");
+            const socialChecked = document.querySelectorAll(".social-check:checked").length;
+            const s6 = Math.round((socialChecked / socialChecks.length) * 100);
+
+            // 7. Tidur Cepat
+            const gadgetTime = document.getElementById("lastGadgetTime").value;
+            const sleepChecked = document.getElementById("sleepReadyCheck").checked;
+            const s7 = (sleepChecked ? 60 : 0) + (gadgetTime <= "21:00" ? 40 : 15);
+
+            const totalAvg = Math.round((s1 + s2 + s3 + s4 + s5 + s6 + s7) / 7);
+            return {
+                elements: [s1, s2, s3, s4, s5, s6, s7],
+                totalScore: totalAvg
+            };
+        }
+
+        function updateTodayScoreUI() {
+            const { totalScore } = calculateElementScores();
+            document.getElementById("todayScoreDisplay").textContent = totalScore;
+        }
+
+        // Simpan Data Hari Ini ke Rekap Bulanan
+        function saveDailyRecord() {
+            const { elements, totalScore } = calculateElementScores();
+            const todayISO = new Date().toISOString().split('T')[0];
+            const todayFormatted = new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+
+            const newRecord = {
+                dateISO: todayISO,
+                dateLabel: todayFormatted,
+                alarmTime: document.getElementById("alarmTime").value,
+                gadgetTime: document.getElementById("lastGadgetTime").value,
+                sportType: document.getElementById("sportType").value,
+                sportDone: document.getElementById("sportDoneCheck").checked,
+                mood: document.getElementById("selectedMood").value || "Belum dipilih",
+                story: document.getElementById("schoolStory").value.trim() || "-",
+                elements: elements,
+                totalScore: totalScore
+            };
+
+            // Cek jika hari ini sudah ada, perbarui; jika belum, tambahkan
+            const existingIndex = monthlyRecords.findIndex(r => r.dateISO === todayISO);
+            if (existingIndex >= 0) {
+                monthlyRecords[existingIndex] = newRecord;
+            } else {
+                monthlyRecords.push(newRecord);
+            }
+
+            // Simpan maksimal 30 hari terakhir
+            if (monthlyRecords.length > 30) {
+                monthlyRecords = monthlyRecords.slice(monthlyRecords.length - 30);
+            }
+
+            showToast(`Data 7 KAIH berhasil direkap! Skor hari ini: ${totalScore}%`);
+            renderRekapAndCharts();
+        }
+
+        // Seed data awal 6 hari sebelumnya agar grafik tidak kosong saat pertama dibuka
+        function seedInitialWeekData() {
+            monthlyRecords = [];
+            const moods = ["Senang", "Bahagia", "Senang", "Biasa", "Bahagia", "Senang"];
+            const sports = ["Jogging", "Lompat Tali", "Jumping Jacks", "Plank", "Squat", "Berenang"];
+            const stories = [
+                "Belajar matematika pecahan bersama kelompok dengan seru.",
+                "Membantu teman merapikan buku di perpustakaan sekolah.",
+                "Presentasi tugas IPA berjalan lancar dan mendapat pujian guru.",
+                "Latihan upacara bendera dan diskusi kelas.",
+                "Menggambar poster lingkungan bersih bersama teman sebangku.",
+                "Mengikuti kegiatan ekstrakurikuler olahraga di lapangan."
+            ];
+
+            for (let i = 6; i >= 1; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                const elScores = [
+                    75 + (i * 3) % 25,
+                    80 + (i * 4) % 20,
+                    i % 2 === 0 ? 100 : 70,
+                    70 + (i * 5) % 30,
+                    85 + (i * 2) % 15,
+                    75 + (i * 4) % 25,
+                    80 + (i * 3) % 20
+                ];
+                const avg = Math.round(elScores.reduce((a, b) => a + b, 0) / 7);
+
+                monthlyRecords.push({
+                    dateISO: d.toISOString().split('T')[0],
+                    dateLabel: d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }),
+                    alarmTime: "05:00",
+                    gadgetTime: "20:30",
+                    sportType: sports[i % sports.length],
+                    sportDone: i % 2 === 0,
+                    mood: moods[i % moods.length],
+                    story: stories[i % stories.length],
+                    elements: elScores,
+                    totalScore: avg
+                });
+            }
+        }
+
+        // Tombol Simulasi Data 30 Hari Penuh
+        function generateDemoMonthData() {
+            monthlyRecords = [];
+            const moods = ["Senang", "Bahagia", "Biasa", "Senang", "Bahagia"];
+            const sports = ["Jumping Jacks", "Squat", "Plank", "Sit Up", "Lompat Tali", "Jogging", "Berenang"];
+            const stories = [
+                "Diskusi kelompok berjalan aktif dan menyenangkan.",
+                "Belajar hal baru tentang sains dan lingkungan.",
+                "Bermain dan belajar bersama teman saat jam istirahat.",
+                "Mengerjakan tugas sekolah tepat waktu dengan semangat."
+            ];
+
+            for (let i = 29; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                // Tren meningkat secara bertahap selama 30 hari
+                const base = Math.min(95, 62 + Math.floor((30 - i) * 1.1));
+                const elScores = [
+                    Math.min(100, base + (i % 7)),
+                    Math.min(100, base + 4),
+                    i % 3 !== 0 ? 100 : 65,
+                    Math.min(100, base + 2),
+                    Math.min(100, base + 5),
+                    Math.min(100, base - 2),
+                    Math.min(100, base + 3)
+                ];
+                const avg = Math.round(elScores.reduce((a, b) => a + b, 0) / 7);
+
+                monthlyRecords.push({
+                    dateISO: d.toISOString().split('T')[0],
+                    dateLabel: d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }),
+                    alarmTime: "05:00",
+                    gadgetTime: "20:45",
+                    sportType: sports[i % sports.length],
+                    sportDone: i % 3 !== 0,
+                    mood: moods[i % moods.length],
+                    story: stories[i % stories.length],
+                    elements: elScores,
+                    totalScore: avg
+                });
+            }
+            renderRekapAndCharts();
+            showToast("Simulasi grafik perkembangan 30 hari terakhir berhasil dimuat!");
+        }
+
+        // Navigasi Tab Utama
+        function switchMainTab(tabName) {
+            const btnKaih = document.getElementById("tabBtnKaih");
+            const btnRekap = document.getElementById("tabBtnRekap");
+            const panelKaih = document.getElementById("panelKaih");
+            const panelRekap = document.getElementById("panelRekap");
+
+            if (tabName === "kaih") {
+                panelKaih.classList.remove("hidden");
+                panelRekap.classList.add("hidden");
+                btnKaih.className = "flex-1 sm:flex-initial px-5 py-2.5 rounded-xl font-display font-bold text-sm flex items-center justify-center gap-2 transition bg-jeans text-butter shadow cursor-pointer";
+                btnRekap.className = "flex-1 sm:flex-initial px-5 py-2.5 rounded-xl font-display font-bold text-sm flex items-center justify-center gap-2 transition text-jeans hover:bg-sky-100 cursor-pointer";
+            } else {
+                panelKaih.classList.add("hidden");
+                panelRekap.classList.remove("hidden");
+                btnRekap.className = "flex-1 sm:flex-initial px-5 py-2.5 rounded-xl font-display font-bold text-sm flex items-center justify-center gap-2 transition bg-jeans text-butter shadow cursor-pointer";
+                btnKaih.className = "flex-1 sm:flex-initial px-5 py-2.5 rounded-xl font-display font-bold text-sm flex items-center justify-center gap-2 transition text-jeans hover:bg-sky-100 cursor-pointer";
+                renderRekapAndCharts();
+            }
+        }
+
+        // Render Statistik, Grafik Chart.js, & Tabel Riwayat
+        function renderRekapAndCharts() {
+            if (!monthlyRecords.length) return;
+
+            // 1. Update Statistik Ringkas
+            const totalDays = monthlyRecords.length;
+            const avgTotal = Math.round(monthlyRecords.reduce((sum, r) => sum + r.totalScore, 0) / totalDays);
+            document.getElementById("statAvgScore").textContent = `${avgTotal}%`;
+            document.getElementById("statTotalDays").textContent = `${totalDays} Hari`;
+
+            // Rata-rata per 7 elemen
+            const elementNames = [
+                "Bangun Pagi", "Beribadah", "Berolahraga",
+                "Makan Sehat", "Gemar Belajar", "Bermasyarakat", "Tidur Cepat"
+            ];
+            const elAverages = [0, 0, 0, 0, 0, 0, 0];
+            monthlyRecords.forEach(r => {
+                r.elements.forEach((val, idx) => elAverages[idx] += val);
+            });
+            for (let i = 0; i < 7; i++) {
+                elAverages[i] = Math.round(elAverages[i] / totalDays);
+            }
+
+            const maxElVal = Math.max(...elAverages);
+            const bestElIdx = elAverages.indexOf(maxElVal);
+            document.getElementById("statBestElement").textContent = `${elementNames[bestElIdx]} (${maxElVal}%)`;
+
+            // Mood Dominan
+            const moodCounts = {};
+            monthlyRecords.forEach(r => {
+                if (r.mood && r.mood !== "Belum dipilih") {
+                    moodCounts[r.mood] = (moodCounts[r.mood] || 0) + 1;
+                }
+            });
+            const dominantMood = Object.keys(moodCounts).sort((a, b) => moodCounts[b] - moodCounts[a])[0] || "Senang";
+            document.getElementById("statDominantMood").textContent = dominantMood;
+
+            // 2. Render Tabel Riwayat (Terbaru di atas)
+            const tbody = document.getElementById("rekapTableBody");
+            tbody.innerHTML = "";
+            [...monthlyRecords].reverse().forEach(rec => {
+                const tr = document.createElement("tr");
+                tr.className = "hover:bg-sky-50/70 transition";
+                tr.innerHTML = `
+                    <td class="py-3 px-4 font-bold text-jeans whitespace-nowrap">${rec.dateLabel}</td>
+                    <td class="py-3 px-4 text-slate-600 whitespace-nowrap">
+                        Alarm: <b>${rec.alarmTime}</b> • Gawai: <b>${rec.gadgetTime}</b>
+                    </td>
+                    <td class="py-3 px-4">
+                        <span class="px-2 py-0.5 rounded-md bg-sky-100 text-denim font-semibold">${rec.sportType}</span>
+                    </td>
+                    <td class="py-3 px-4 max-w-xs">
+                        <span class="font-bold text-jeans">[${rec.mood}]</span>
+                        <span class="text-slate-600 line-clamp-1">${rec.story}</span>
+                    </td>
+                    <td class="py-3 px-4 text-right">
+                        <span class="px-2.5 py-1 rounded-full bg-butter-gradient border border-yellow-400 text-jeans font-extrabold">
+                            ${rec.totalScore}%
+                        </span>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // 3. Render Line Chart Perkembangan 1 Bulan Terakhir
+            const ctxTrend = document.getElementById("monthlyTrendChart").getContext("2d");
+            if (trendChartInstance) trendChartInstance.destroy();
+
+            const gradientFill = ctxTrend.createLinearGradient(0, 0, 0, 280);
+            gradientFill.addColorStop(0, "rgba(37, 99, 235, 0.45)");   // Biru Denim
+            gradientFill.addColorStop(0.6, "rgba(125, 211, 252, 0.25)"); // Biru Langit
+            gradientFill.addColorStop(1, "rgba(254, 240, 138, 0.05)");  // Butter Yellow
+
+            trendChartInstance = new Chart(ctxTrend, {
+                type: "line",
+                data: {
+                    labels: monthlyRecords.map(r => r.dateLabel.slice(0, 6)),
+                    datasets: [{
+                        label: "Capaian Harian 7 KAIH (%)",
+                        data: monthlyRecords.map(r => r.totalScore),
+                        borderColor: "#1E3A8A", // Biru Jeans
+                        backgroundColor: gradientFill,
+                        borderWidth: 3,
+                        pointBackgroundColor: "#FACC15", // Butter Yellow
+                        pointBorderColor: "#1E3A8A",
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        fill: true,
+                        tension: 0.35
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            min: 0,
+                            max: 100,
+                            ticks: { callback: val => val + "%" },
+                            grid: { color: "#E0F2FE" }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+
+            // 4. Render Radar Chart Keseimbangan 7 Elemen
+            const ctxRadar = document.getElementById("elementRadarChart").getContext("2d");
+            if (radarChartInstance) radarChartInstance.destroy();
+
+            radarChartInstance = new Chart(ctxRadar, {
+                type: "radar",
+                data: {
+                    labels: elementNames,
+                    datasets: [{
+                        label: "Rata-Rata (%)",
+                        data: elAverages,
+                        backgroundColor: "rgba(254, 240, 138, 0.55)", // Butter Yellow
+                        borderColor: "#2563EB", // Biru Denim
+                        borderWidth: 2.5,
+                        pointBackgroundColor: "#1E3A8A"
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        r: {
+                            min: 0,
+                            max: 100,
+                            ticks: { display: false },
+                            pointLabels: {
+                                font: { size: 10, weight: 'bold' },
+                                color: '#1E3A8A'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
